@@ -1,79 +1,75 @@
 package controller;
 
 import modelo.Pessoa;
+import repository.PessoaDAO;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@ViewScoped
+@SessionScoped
 @Named
 public class PessoaController implements Serializable {
+    private Pessoa pessoaForm;
+    private List<Pessoa> pessoas;// = new ArrayList<>();
+    private Pessoa pessoaSelecionada;
+    @Inject
+    private PessoaDAO pessoaDAO;
 
-    private String nome;
-    private String sobrenome;
-    private Integer idade;
-    private List<Pessoa> pessoas;
-
+    @PostConstruct
+    private void innit (){
+        pessoaForm = new Pessoa();
+        pessoas = pessoaDAO.consultarTodos();
+    }
 
     public void cadastrar(){
-
-        Pessoa p = new Pessoa();
-        p.setNome(nome);
-        p.setSobrenome(sobrenome);
-        p.setIdade(idade);
-
-        //pessoas.add();
-        pessoas.add(p);
+        //pessoas.add(pessoaForm);
+        pessoaDAO.salvar(pessoaForm);
+        innit();
+        limpar();
     }
 
     public void limpar(){
-        nome = "";
-        sobrenome = "";
-        idade = 0;
+        this.pessoaForm = new Pessoa();
     }
 
-    @PostConstruct
-    private void init(){
-        pessoas = new ArrayList<>();
+    public void excluir(){
+        this.pessoas.remove(pessoaForm);
+        limpar();
     }
 
-    public String getNome() {
-        return nome;
+    public void aoSelecionar(){
+        this.pessoaForm = pessoaSelecionada;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getSobrenome() {
-        return sobrenome;
-    }
-
-    public void setSobrenome(String sobrenome) {
-        this.sobrenome = sobrenome;
-    }
-
-    public Integer getIdade() {
-        return idade;
-    }
-
-    public void setIdade(Integer idade) {
-        this.idade = idade;
+    public void aoDesselecionar(){
+        limpar();
     }
 
     public List<Pessoa> getPessoas() {
         return pessoas;
     }
-
     public void setPessoas(List<Pessoa> pessoas) {
         this.pessoas = pessoas;
     }
 
+    public Pessoa getPessoaSelecionada() {
+        return pessoaSelecionada;
+    }
 
+    public void setPessoaSelecionada(Pessoa pessoaSelecionada) {
+        this.pessoaSelecionada = pessoaSelecionada;
+    }
 
+    public Pessoa getPessoaForm() {
+        return pessoaForm;
+    }
+
+    public void setPessoaForm(Pessoa pessoaForm) {
+        this.pessoaForm = pessoaForm;
+    }
 }
