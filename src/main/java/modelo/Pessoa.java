@@ -1,35 +1,61 @@
 package modelo;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 public class Pessoa implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "Nome deve ser preenchido!")
     private String nome;
     private String cpf;
     private String endereco;
     private String telefone;
-    private LocalDateTime dataDeCriacao;
+    private LocalDateTime dataCriacao;
+
+    public Pessoa() {
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void prePersist(){
+        this.setDataCriacao(LocalDateTime.now());
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Pessoa pessoa = (Pessoa) o;
-        return id.equals(pessoa.id);
+
+        return id != null ? id.equals(pessoa.id) : pessoa.id == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id != null ? id.hashCode() : 0;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -62,13 +88,5 @@ public class Pessoa implements Serializable {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
-    }
-
-    public LocalDateTime getDataDeCriacao() {
-        return dataDeCriacao;
-    }
-
-    public void setDataDeCriacao(LocalDateTime dataDeCriacao) {
-        this.dataDeCriacao = dataDeCriacao;
     }
 }
